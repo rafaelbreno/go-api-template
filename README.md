@@ -6,8 +6,7 @@ A TODO list, in my opinion, is the Hello World of API development, so why not de
 ### Misc:
 - [ ] Makefile
 - [ ] GoDoc
-- [ ] API Endpoint
-- [ ] 
+- [ ] API Endpoint documentation
 
 ### Services
 
@@ -65,7 +64,7 @@ A TODO list, in my opinion, is the Hello World of API development, so why not de
 - [ ] Containers Orchestration
     - Kubernetes
 - [ ] CI/CD
-    - CircleCI
+    - DroneCI
 - [ ] Configuration Management
     - Ansible
 - [ ] Infrastructure Provisioning
