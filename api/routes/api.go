@@ -1,16 +1,28 @@
 package routes
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/rafaelbreno/go-api-template/api/cmd/server"
+)
 
 var r *gin.Engine
 
 func init() {
-	r = gin.Default()
+	sv, err := server.NewServer(8080, server.TestMode)
+
+	if err != nil {
+		panic(err)
+	}
+
+	r = sv.Router
 
 	taskRoutes()
 	listRoutes()
 
-	r.Run(":80")
+	r.NoRoute(noRouteHandler)
+	r.NoMethod(methodNotAllowedHandler)
+
+	sv.Listen()
 }
 
 func tempHandler(c *gin.Context) {
@@ -39,4 +51,16 @@ func listRoutes() {
 	group.PATCH("/{id}", tempHandler)
 	group.PUT("/{id}", tempHandler)
 	group.DELETE("/{id}", tempHandler)
+}
+
+func noRouteHandler(c *gin.Context) {
+	c.JSON(404, gin.H{
+		"message": "Endpoint not found",
+	})
+}
+
+func methodNotAllowedHandler(c *gin.Context) {
+	c.JSON(405, gin.H{
+		"message": "Method not allowed",
+	})
 }
