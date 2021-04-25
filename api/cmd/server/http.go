@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -29,7 +30,7 @@ type Server struct {
 }
 
 // Return Server
-func NewServer(port int, mode ServerMode) (sv Server) {
+func NewServer(port int, mode ServerMode) (sv Server, err error) {
 	sv = Server{
 		port:   port,
 		Router: gin.New(),
@@ -41,9 +42,11 @@ func NewServer(port int, mode ServerMode) (sv Server) {
 	case DebugMode:
 		gin.SetMode(gin.DebugMode)
 	case ReleaseMode:
+		gin.SetMode(gin.ReleaseMode)
+	case TestMode:
 		gin.SetMode(gin.TestMode)
 	default:
-		gin.SetMode(gin.ReleaseMode)
+		err = fmt.Errorf("The mode of value %d does not exist", mode)
 	}
 
 	sv.Router.Use(gin.Recovery())
