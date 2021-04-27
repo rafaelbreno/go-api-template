@@ -6,8 +6,9 @@ import (
 )
 
 var r *gin.Engine
+var sv server.Server
 
-func init() {
+func Listen() {
 	sv, err := server.NewServer(8080, server.TestMode)
 
 	if err != nil {
