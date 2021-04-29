@@ -9,6 +9,8 @@ import (
 
 // Boostrap
 func Boostrap() {
+	migration()
+
 	router.Listen()
 }
 
