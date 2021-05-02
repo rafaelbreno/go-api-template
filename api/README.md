@@ -36,6 +36,6 @@
 - `entity/`
     - Represents our table
 - `query/`
-    - Store `constants` of _rawl SQL_ queries (you can implement an ORM)
+    - Store `constants` of _raw SQL_ queries (you can implement an ORM)
 - `dto/`
     - Data transfer objects
