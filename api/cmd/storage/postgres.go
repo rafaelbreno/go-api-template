@@ -1,26 +1,26 @@
 package storage
 
 import (
-	"context"
 	"fmt"
 	"os"
 
-	"github.com/jackc/pgx/v4"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 const (
 	DATABASE_URL = "postgresql://%s:%s@%s:%s/%s"
 )
 
-var DBConn *pgx.Conn
+var DBConn *gorm.DB
 
 func init() {
-	conn, err := pgx.Connect(context.Background(), mountDatabaseURL())
+	db, err := gorm.Open(postgres.Open(mountDatabaseURL()), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
 
-	DBConn = conn
+	DBConn = db
 }
 
 func mountDatabaseURL() string {

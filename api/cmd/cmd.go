@@ -3,7 +3,7 @@ package cmd
 import (
 	_ "github.com/rafaelbreno/go-api-template/api/cmd/config"
 	"github.com/rafaelbreno/go-api-template/api/cmd/storage"
-	"github.com/rafaelbreno/go-api-template/api/internal/query"
+	"github.com/rafaelbreno/go-api-template/api/internal/entity"
 	router "github.com/rafaelbreno/go-api-template/api/routes"
 )
 
@@ -17,5 +17,5 @@ func Boostrap() {
 // Migrate tables
 func migration() {
 	storage.
-		Migrator(query.TaskSchema)
+		Migrator(entity.Task{})
 }
