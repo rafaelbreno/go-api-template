@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/rafaelbreno/go-api-template/api/cmd/server"
+	"github.com/rafaelbreno/go-api-template/api/internal/handler"
 )
 
 var r *gin.Engine
@@ -33,25 +34,26 @@ func tempHandler(c *gin.Context) {
 }
 
 func taskRoutes() {
+	h := handler.NewTaskHandler()
 	group := r.Group("/task")
 
-	group.GET("", tempHandler)
-	group.GET("/{id}", tempHandler)
-	group.POST("/create", tempHandler)
-	group.PATCH("/{id}", tempHandler)
-	group.PUT("/{id}", tempHandler)
-	group.DELETE("/{id}", tempHandler)
+	group.GET("", h.FindAll)
+	group.GET("/:id", h.FindById)
+	group.POST("/create", h.Create)
+	group.PATCH("/:id", tempHandler)
+	group.PUT("/:id", tempHandler)
+	group.DELETE("/:id", tempHandler)
 }
 
 func listRoutes() {
 	group := r.Group("/list")
 
 	group.GET("", tempHandler)
-	group.GET("/{id}", tempHandler)
+	group.GET("/:id", tempHandler)
 	group.POST("/create", tempHandler)
-	group.PATCH("/{id}", tempHandler)
-	group.PUT("/{id}", tempHandler)
-	group.DELETE("/{id}", tempHandler)
+	group.PATCH("/:id", tempHandler)
+	group.PUT("/:id", tempHandler)
+	group.DELETE("/:id", tempHandler)
 }
 
 func noRouteHandler(c *gin.Context) {

@@ -8,7 +8,8 @@ import (
 
 type TaskRepository interface {
 	FindAll() ([]entity.Task, error)
-	FindByID(id uint) (entity.Task, error)
+	FindByID(id string) (entity.Task, error)
+	Create(task entity.Task) (entity.Task, error)
 }
 
 type TaskRepositoryDB struct {
@@ -25,7 +26,7 @@ func (tr TaskRepositoryDB) FindAll() ([]entity.Task, error) {
 	return tasks, nil
 }
 
-func (tr TaskRepositoryDB) FindByID(id uint) (entity.Task, error) {
+func (tr TaskRepositoryDB) FindByID(id string) (entity.Task, error) {
 	var task entity.Task
 
 	if err := tr.DBConn.Where("id = ?", id).Find(&task).Error; err != nil {
@@ -33,6 +34,14 @@ func (tr TaskRepositoryDB) FindByID(id uint) (entity.Task, error) {
 	}
 
 	return task, nil
+}
+
+func (tr TaskRepositoryDB) Create(t entity.Task) (entity.Task, error) {
+	if result := tr.DBConn.Create(&t); result.Error != nil {
+		return entity.Task{}, result.Error
+	}
+
+	return t, nil
 }
 
 func NewTaskRepositoryDB() TaskRepositoryDB {
