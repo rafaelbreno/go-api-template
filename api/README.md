@@ -35,7 +35,11 @@
     - Queries
 - `entity/`
     - Represents our table
+- `handler/`
+    - This our apps handler
 - `query/`
     - Store `constants` of _raw SQL_ queries (you can implement an ORM)
+- `states/`
+    - Store statuses as `constants` of entities
 - `dto/`
     - Data transfer objects
