@@ -29,7 +29,7 @@ func (tr TaskRepositoryDB) FindAll() ([]entity.Task, error) {
 func (tr TaskRepositoryDB) FindByID(id string) (entity.Task, error) {
 	var task entity.Task
 
-	if err := tr.DBConn.Where("id = ?", id).Find(&task).Error; err != nil {
+	if err := tr.DBConn.First(&task, id).Error; err != nil {
 		return task, err
 	}
 

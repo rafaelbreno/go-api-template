@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rafaelbreno/go-api-template/api/internal/entity"
 	"github.com/rafaelbreno/go-api-template/api/internal/repository"
+	"gorm.io/gorm"
 )
 
 type taskHandler struct {
@@ -16,6 +17,13 @@ func NewTaskHandler() taskHandler {
 
 func (t taskHandler) FindAll(c *gin.Context) {
 	tasks, err := t.repo.FindAll()
+
+	if err == gorm.ErrRecordNotFound {
+		c.JSON(404, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
 	if err != nil {
 		c.JSON(401, gin.H{
