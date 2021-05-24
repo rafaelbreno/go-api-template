@@ -39,8 +39,8 @@ func (tr TaskRepositoryDB) FindByID(id string) (entity.Task, error) {
 }
 
 func (tr TaskRepositoryDB) Create(t entity.Task) (entity.Task, error) {
-	if result := tr.DBConn.Create(&t); result.Error != nil {
-		return entity.Task{}, result.Error
+	if err := tr.DBConn.Create(&t).Error; err != nil {
+		return entity.Task{}, err
 	}
 
 	return t, nil
@@ -53,11 +53,11 @@ func (tr TaskRepositoryDB) Update(t entity.Task) (entity.Task, error) {
 		return task, err
 	}
 
-	if t.Title == "" {
+	if t.Title != "" {
 		task.Title = t.Title
 	}
 
-	if t.Description == "" {
+	if t.Description != "" {
 		task.Description = t.Description
 	}
 
@@ -65,11 +65,11 @@ func (tr TaskRepositoryDB) Update(t entity.Task) (entity.Task, error) {
 		task.Status = t.Status
 	}
 
-	if result := tr.DBConn.Save(&task); result.Error != nil {
-		return entity.Task{}, result.Error
+	if err := tr.DBConn.Save(&task).Error; err != nil {
+		return entity.Task{}, err
 	}
 
-	return t, nil
+	return task, nil
 }
 
 func (tr TaskRepositoryDB) Delete(id string) (entity.Task, error) {
