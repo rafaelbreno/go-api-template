@@ -17,5 +17,5 @@ func Boostrap() {
 // Migrate tables
 func migration() {
 	storage.
-		Migrator(entity.Task{})
+		Migrator(entity.Task{}, entity.List{})
 }
