@@ -10,6 +10,7 @@ type TaskRepository interface {
 	FindAll() ([]entity.Task, error)
 	FindByID(id string) (entity.Task, error)
 	Create(task entity.Task) (entity.Task, error)
+	Update(task entity.Task) (entity.Task, error)
 }
 
 type TaskRepositoryDB struct {
@@ -38,6 +39,32 @@ func (tr TaskRepositoryDB) FindByID(id string) (entity.Task, error) {
 
 func (tr TaskRepositoryDB) Create(t entity.Task) (entity.Task, error) {
 	if result := tr.DBConn.Create(&t); result.Error != nil {
+		return entity.Task{}, result.Error
+	}
+
+	return t, nil
+}
+
+func (tr TaskRepositoryDB) Update(t entity.Task) (entity.Task, error) {
+	var task entity.Task
+
+	if err := tr.DBConn.First(&task, t.ID).Error; err != nil {
+		return task, err
+	}
+
+	if t.Title == "" {
+		task.Title = t.Title
+	}
+
+	if t.Description == "" {
+		task.Description = t.Description
+	}
+
+	if t.Status != task.Status {
+		task.Status = t.Status
+	}
+
+	if result := tr.DBConn.Save(&task); result.Error != nil {
 		return entity.Task{}, result.Error
 	}
 

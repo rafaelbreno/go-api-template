@@ -40,8 +40,8 @@ func taskRoutes() {
 	group.GET("", h.FindAll)
 	group.GET("/:id", h.FindById)
 	group.POST("/create", h.Create)
-	group.PATCH("/:id", tempHandler)
-	group.PUT("/:id", tempHandler)
+	group.PATCH("/:id", h.Update)
+	group.PUT("/:id", h.Update)
 	group.DELETE("/:id", tempHandler)
 }
 
