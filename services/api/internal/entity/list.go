@@ -11,7 +11,7 @@ type List struct {
 	Title       string `db:"title" json:"title"`             // Title, required
 	Description string `db:"description" json:"description"` // Description, not required
 
-	Tasks []Task // Tasks assigned to this list
+	Tasks []Task `json:"tasks"` // Tasks assigned to this list
 
 	// 0 - ListNotStarted ListStatus = iota
 	// 1 - ListInProgress

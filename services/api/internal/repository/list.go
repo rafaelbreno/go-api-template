@@ -35,6 +35,10 @@ func (lr ListRepositoryDB) FindByID(id string) (entity.List, error) {
 		return list, err
 	}
 
+	if err := lr.DBConn.Where("list_id = ?", list.ID).Find(&list.Tasks).Error; err != nil {
+		return list, err
+	}
+
 	return list, nil
 }
 

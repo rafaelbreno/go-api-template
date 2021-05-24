@@ -39,8 +39,14 @@ func (tr TaskRepositoryDB) FindByID(id string) (entity.Task, error) {
 }
 
 func (tr TaskRepositoryDB) Create(t entity.Task) (entity.Task, error) {
-	if result := tr.DBConn.Create(&t); result.Error != nil {
-		return entity.Task{}, result.Error
+	var tempList entity.List
+
+	if err := tr.DBConn.First(&tempList, t.ListID).Error; err != nil {
+		return entity.Task{}, err
+	}
+
+	if err := tr.DBConn.Create(&t).Error; err != nil {
+		return entity.Task{}, err
 	}
 
 	return t, nil
