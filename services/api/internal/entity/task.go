@@ -13,5 +13,5 @@ type Task struct {
 	// 0 - TaskIncomplete
 	// 1 - TaskComplete
 	// 2 - TaskCancelled
-	Status states.TaskStatus `db:"status" json:"status"`
+	Status states.TaskStatus `gorm:"default:0" db:"status" json:"status"`
 }
