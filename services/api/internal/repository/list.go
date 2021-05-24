@@ -71,6 +71,15 @@ func (lr ListRepositoryDB) Update(l entity.List) (entity.List, error) {
 	return list, nil
 }
 
+func (lr ListRepositoryDB) Delete(id string) (entity.List, error) {
+	var list entity.List
+
+	if err := lr.DBConn.Delete(&list, id).Error; err != nil {
+		return list, err
+	}
+
+	return list, nil
+}
 func NewListRepositoryDB() ListRepositoryDB {
 	return ListRepositoryDB{storage.DBConn}
 }
