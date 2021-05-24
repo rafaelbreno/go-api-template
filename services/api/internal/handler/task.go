@@ -113,3 +113,21 @@ func (t taskHandler) Update(c *gin.Context) {
 	})
 	return
 }
+
+func (t taskHandler) Delete(c *gin.Context) {
+	id := c.Param("id")
+
+	task, err := t.repo.Delete(id)
+
+	if err != nil {
+		c.JSON(402, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"data": task,
+	})
+	return
+}

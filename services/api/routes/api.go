@@ -42,7 +42,7 @@ func taskRoutes() {
 	group.POST("/create", h.Create)
 	group.PATCH("/:id", h.Update)
 	group.PUT("/:id", h.Update)
-	group.DELETE("/:id", tempHandler)
+	group.DELETE("/:id", h.Delete)
 }
 
 func listRoutes() {

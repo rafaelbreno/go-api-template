@@ -11,6 +11,7 @@ type TaskRepository interface {
 	FindByID(id string) (entity.Task, error)
 	Create(task entity.Task) (entity.Task, error)
 	Update(task entity.Task) (entity.Task, error)
+	Delete(id string) (entity.Task, error)
 }
 
 type TaskRepositoryDB struct {
@@ -69,6 +70,16 @@ func (tr TaskRepositoryDB) Update(t entity.Task) (entity.Task, error) {
 	}
 
 	return t, nil
+}
+
+func (tr TaskRepositoryDB) Delete(id string) (entity.Task, error) {
+	var task entity.Task
+
+	if err := tr.DBConn.Delete(&task, id).Error; err != nil {
+		return task, err
+	}
+
+	return task, nil
 }
 
 func NewTaskRepositoryDB() TaskRepositoryDB {
