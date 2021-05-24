@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/rafaelbreno/go-api-template/api/cmd/storage"
 	"github.com/rafaelbreno/go-api-template/api/internal/entity"
 	"gorm.io/gorm"
 )
@@ -68,4 +69,8 @@ func (lr ListRepositoryDB) Update(l entity.List) (entity.List, error) {
 	}
 
 	return list, nil
+}
+
+func NewListRepositoryDB() ListRepositoryDB {
+	return ListRepositoryDB{storage.DBConn}
 }
