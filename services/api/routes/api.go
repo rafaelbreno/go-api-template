@@ -47,13 +47,14 @@ func taskRoutes() {
 
 func listRoutes() {
 	group := r.Group("/list")
+	h := handler.NewListHandler()
 
-	group.GET("", tempHandler)
-	group.GET("/:id", tempHandler)
-	group.POST("/create", tempHandler)
-	group.PATCH("/:id", tempHandler)
-	group.PUT("/:id", tempHandler)
-	group.DELETE("/:id", tempHandler)
+	group.GET("", h.FindAll)
+	group.GET("/:id", h.FindByID)
+	group.POST("/create", h.Create)
+	group.PATCH("/:id", h.Update)
+	group.PUT("/:id", h.Update)
+	group.DELETE("/:id", h.Delete)
 }
 
 func noRouteHandler(c *gin.Context) {
