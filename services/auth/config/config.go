@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -16,6 +17,11 @@ var DB *gorm.DB
 
 func init() {
 	var err error
+
+	err = godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
 
 	DB, err = gorm.Open(postgres.Open(mountDatabaseURL()), &gorm.Config{})
 	if err != nil {
