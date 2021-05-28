@@ -1,10 +1,12 @@
 package server
 
 import (
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/rafaelbreno/go-api-template/services/auth/handlers"
 )
 
 // More https://docs.gofiber.io/api/fiber#config
@@ -18,13 +20,16 @@ func getConfig() fiber.Config {
 }
 
 var srv *fiber.App
+var r fiber.Router
 
 func Listen() {
 	srv = fiber.New(getConfig())
 
+	r = srv.Group("/auth")
+
 	routes()
 
-	srv.Listen(":3000")
+	log.Fatal(srv.Listen(":3000"))
 }
 
 func routes() {
@@ -35,4 +40,8 @@ func routes() {
 				"message": "Everything working fine",
 			})
 	})
+
+	uh := handlers.NewUserHandler()
+
+	r.Post("/signup", uh.Create)
 }
