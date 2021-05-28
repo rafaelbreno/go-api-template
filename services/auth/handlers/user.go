@@ -39,7 +39,7 @@ func (u userHandler) Create(c *fiber.Ctx) error {
 	}
 
 	c.
-		Status(http.StatusUnprocessableEntity).
+		Status(http.StatusCreated).
 		JSON(user)
 	return nil
 }
