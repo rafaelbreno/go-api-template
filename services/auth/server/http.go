@@ -1,6 +1,7 @@
 package server
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -19,7 +20,7 @@ func getConfig() fiber.Config {
 var srv *fiber.App
 
 func Listen() {
-	srv = fiber.New()
+	srv = fiber.New(getConfig())
 
 	routes()
 
@@ -28,6 +29,10 @@ func Listen() {
 
 func routes() {
 	srv.Get("/health-check", func(c *fiber.Ctx) error {
-		return c.SendString("OK")
+		return c.
+			Status(http.StatusOK).
+			JSON(map[string]string{
+				"message": "Everything working fine",
+			})
 	})
 }
