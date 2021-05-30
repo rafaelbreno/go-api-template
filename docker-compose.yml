@@ -14,4 +14,11 @@ services:
             - POSTGRES_DB=${POSTGRES_DB}
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-
+    redis:
+      build:
+          context: .
+          dockerfile: .docker/redis/Dockerfile
+      ports:
+          - "${REDIS_PORT}:6379"
+      image: ${REDIS_NAME}
+      container_name: ${REDIS_NAME}
