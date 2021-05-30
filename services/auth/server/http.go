@@ -44,4 +44,5 @@ func routes() {
 	uh := handlers.NewUserHandler()
 
 	r.Post("/signup", uh.Create)
+	r.Post("/signin", uh.SignIn)
 }
