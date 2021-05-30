@@ -52,3 +52,32 @@ func (u userHandler) Create(c *fiber.Ctx) error {
 		JSON(user)
 	return nil
 }
+
+func (u userHandler) SignIn(c *fiber.Ctx) error {
+	var user entity.User
+	var err error
+
+	if err = c.BodyParser(&user); err != nil {
+		c.
+			Status(http.StatusServiceUnavailable).
+			JSON(map[string]string{
+				"message": err.Error(),
+			})
+		return err
+	}
+
+	if user, err = u.repo.SignIn(user); err != nil {
+		c.
+			Status(http.StatusNotFound).
+			JSON(map[string]string{
+				"message": err.Error(),
+			})
+		return err
+	}
+
+	c.
+		Status(http.StatusOK).
+		JSON(user)
+
+	return nil
+}
