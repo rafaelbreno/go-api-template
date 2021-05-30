@@ -28,6 +28,15 @@ func (u userHandler) Create(c *fiber.Ctx) error {
 		return err
 	}
 
+	if err := user.EncryptPassword(); err != nil {
+		c.
+			Status(http.StatusUnprocessableEntity).
+			JSON(map[string]string{
+				"message": err.Error(),
+			})
+		return err
+	}
+
 	user, err := u.repo.Create(user)
 	if err != nil {
 		c.
