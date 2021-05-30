@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/go-redis/redis/v8"
 	"github.com/rafaelbreno/go-api-template/services/auth/config"
 	"github.com/rafaelbreno/go-api-template/services/auth/entity"
 	"gorm.io/gorm"
@@ -12,7 +13,8 @@ type UserRepository interface {
 }
 
 type UserRepositoryDB struct {
-	DB *gorm.DB
+	DB  *gorm.DB
+	Rdb *redis.Client
 }
 
 func (ur UserRepositoryDB) Create(user entity.User) (entity.User, error) {
@@ -37,5 +39,8 @@ func (ur UserRepositoryDB) SignIn(user entity.User) (entity.User, error) {
 }
 
 func NewUserRepositoryDB() UserRepositoryDB {
-	return UserRepositoryDB{config.DB}
+	return UserRepositoryDB{
+		DB:  config.DB,
+		Rdb: config.Rdb,
+	}
 }
