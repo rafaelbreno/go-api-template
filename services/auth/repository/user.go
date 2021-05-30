@@ -8,6 +8,7 @@ import (
 
 type UserRepository interface {
 	Create(user entity.User) (entity.User, error)
+	SignIn(user entity.User) (entity.User, error)
 }
 
 type UserRepositoryDB struct {
@@ -19,6 +20,20 @@ func (ur UserRepositoryDB) Create(user entity.User) (entity.User, error) {
 		return user, err
 	}
 	return user, nil
+}
+
+func (ur UserRepositoryDB) SignIn(user entity.User) (entity.User, error) {
+	var userDB entity.User
+
+	if err := ur.DB.Where("username = ?", user.Username).First(&userDB).Error; err != nil {
+		return entity.User{}, err
+	}
+
+	if err := user.CheckPassword(userDB.Password); err != nil {
+		return user, err
+	}
+
+	return userDB, nil
 }
 
 func NewUserRepositoryDB() UserRepositoryDB {
