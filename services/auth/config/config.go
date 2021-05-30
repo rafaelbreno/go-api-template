@@ -1,11 +1,14 @@
 package config
 
 import (
+	"context"
 	"fmt"
 	"os"
 
-	"github.com/joho/godotenv"
+	redis "github.com/go-redis/redis/v8"
 	"gorm.io/driver/postgres"
+
+	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
 
@@ -14,6 +17,7 @@ const (
 )
 
 var DB *gorm.DB
+var Rdb *redis.Client
 
 func init() {
 	var err error
@@ -27,6 +31,21 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
+	if err != nil {
+		panic(err)
+	}
+
+	Rdb = redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%s", os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PORT")),
+		Password: "",
+		DB:       0,
+	})
+
+	if status := Rdb.Ping(context.Background()); status.Err() != nil {
+		panic(status.Err())
+	}
+
 }
 
 func mountDatabaseURL() string {
