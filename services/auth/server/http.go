@@ -1,11 +1,14 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/rafaelbreno/go-api-template/services/auth/auth"
 	"github.com/rafaelbreno/go-api-template/services/auth/handlers"
 )
 
@@ -45,4 +48,40 @@ func routes() {
 
 	r.Post("/signup", uh.Create)
 	r.Post("/signin", uh.SignIn)
+
+	r.Use(authMiddleware)
+
+func authMiddleware(c *fiber.Ctx) error {
+	bearerToken := c.Get("Authorization")
+
+	if bearerToken == "" {
+		err := fmt.Errorf("Authorization key isn't set")
+		return c.
+			Status(http.StatusForbidden).
+			JSON(map[string]string{
+				"message": err.Error(),
+			})
+	}
+
+	tokens := strings.Split(bearerToken, " ")
+
+	token := tokens[len(tokens)-1]
+
+	jwtWrapper := auth.Wrapper{
+		Secret: "super-secret",
+		Issuer: "AuthService",
+	}
+
+	jwtClaim, err := jwtWrapper.ValidateToken(token)
+	if err != nil {
+		return c.
+			Status(http.StatusForbidden).
+			JSON(map[string]string{
+				"message": err.Error(),
+			})
+	}
+
+	c.Set("username", jwtClaim.Username)
+
+	return c.Next()
 }
