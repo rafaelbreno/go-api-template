@@ -3,6 +3,7 @@ module github.com/rafaelbreno/go-api-template/services/auth
 go 1.16
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-redis/redis/v8 v8.5.1-0.20210216103855-1f32092a3b04
 	github.com/gofiber/fiber/v2 v2.10.0
 	github.com/golang/protobuf v1.5.2 // indirect
