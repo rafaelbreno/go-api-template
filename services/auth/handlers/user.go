@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/rafaelbreno/go-api-template/services/auth/auth"
 	"github.com/rafaelbreno/go-api-template/services/auth/entity"
 	"github.com/rafaelbreno/go-api-template/services/auth/repository"
 )
@@ -47,9 +48,19 @@ func (u userHandler) Create(c *fiber.Ctx) error {
 		return err
 	}
 
+	userAuth, err := auth.GetUserToken(user)
+	if err != nil {
+		c.
+			Status(http.StatusUnprocessableEntity).
+			JSON(map[string]string{
+				"message": err.Error(),
+			})
+		return err
+	}
+
 	c.
 		Status(http.StatusCreated).
-		JSON(user)
+		JSON(userAuth)
 	return nil
 }
 
@@ -75,9 +86,19 @@ func (u userHandler) SignIn(c *fiber.Ctx) error {
 		return err
 	}
 
+	userAuth, err := auth.GetUserToken(user)
+	if err != nil {
+		c.
+			Status(http.StatusUnprocessableEntity).
+			JSON(map[string]string{
+				"message": err.Error(),
+			})
+		return err
+	}
+
 	c.
-		Status(http.StatusOK).
-		JSON(user)
+		Status(http.StatusCreated).
+		JSON(userAuth)
 
 	return nil
 }
