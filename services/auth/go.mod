@@ -1,0 +1,20 @@
+module github.com/rafaelbreno/go-api-template/services/auth
+
+go 1.16
+
+require (
+	github.com/andybalholm/brotli v1.0.3 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/go-redis/redis/v8 v8.5.1-0.20210216103855-1f32092a3b04
+	github.com/gofiber/fiber/v2 v2.10.0
+	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/joho/godotenv v1.3.0
+	github.com/klauspost/compress v1.12.3 // indirect
+	github.com/lib/pq v1.6.0 // indirect
+	github.com/valyala/fasthttp v1.25.0 // indirect
+	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
+	golang.org/x/sys v0.0.0-20210531080801-fdfd190a6549 // indirect
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	gorm.io/driver/postgres v1.1.0
+	gorm.io/gorm v1.21.10
+)
