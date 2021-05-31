@@ -51,6 +51,16 @@ func routes() {
 
 	r.Use(authMiddleware)
 
+	srv.Get("/auth-health-check", func(c *fiber.Ctx) error {
+		return c.
+			Status(http.StatusOK).
+			JSON(map[string]string{
+				"message": "Everything working fine",
+				"token":   c.Get("Authorization"),
+			})
+	})
+}
+
 func authMiddleware(c *fiber.Ctx) error {
 	bearerToken := c.Get("Authorization")
 
