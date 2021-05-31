@@ -46,7 +46,7 @@ func (aw *Wrapper) GenerateToken(user entity.User) (signedToken string, err erro
 	claim := &Claim{
 		Username: user.Username,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * time.Duration(aw.ExpirationHours)).Unix(),
 			Issuer:    aw.Issuer,
 		},
 	}
