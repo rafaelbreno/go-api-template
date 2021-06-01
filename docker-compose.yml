@@ -1,6 +1,19 @@
 version: "3"
 
 services:
+    postgres-auth:
+        build:
+            context: .
+            dockerfile: .docker/postgresql/Dockerfile
+        ports: 
+            - "${POSTGRES_AUTH_PORT}:5432"
+        image: ${POSTGRES_AUTH_NAME}
+        container_name: ${POSTGRES_AUTH_NAME}
+        environment:
+            - PGDATA=${POSTGRES_AUTH_DATA}
+            - POSTGRES_DB=${POSTGRES_AUTH_DB}
+            - POSTGRES_USER=${POSTGRES_AUTH_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_AUTH_PASSWORD}
     postgres:
         build:
             context: .
@@ -22,3 +35,17 @@ services:
           - "${REDIS_PORT}:6379"
       image: ${REDIS_NAME}
       container_name: ${REDIS_NAME}
+    api:
+      build:
+          context: ./services/api
+          dockerfile: .
+      depends_on:
+        - redis
+        - postgres
+        - postgres-auth
+    auth:
+      build:
+          context: ./services/api
+          dockerfile: .
+      depends_on:
+        - api
