@@ -10,7 +10,7 @@ var r *gin.Engine
 var sv server.Server
 
 func Listen() {
-	sv, err := server.NewServer(8080, server.TestMode)
+	sv, err := server.NewServer(8070, server.TestMode)
 
 	if err != nil {
 		panic(err)
