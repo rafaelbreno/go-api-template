@@ -23,12 +23,9 @@ func getConfig() fiber.Config {
 }
 
 var srv *fiber.App
-var r fiber.Router
 
 func Listen() {
 	srv = fiber.New(getConfig())
-
-	r = srv.Group("")
 
 	routes()
 
@@ -43,13 +40,20 @@ func routes() {
 				"message": "Everything working fine",
 			})
 	})
+	srv.Get("/ping", func(c *fiber.Ctx) error {
+		return c.
+			Status(http.StatusOK).
+			JSON(map[string]string{
+				"message": "Pong! Auth",
+			})
+	})
 
 	uh := handlers.NewUserHandler()
 
-	r.Post("/signup", uh.Create)
-	r.Post("/signin", uh.SignIn)
+	srv.Post("/signup", uh.Create)
+	srv.Post("/signin", uh.SignIn)
 
-	r.Use(authMiddleware)
+	srv.Use(authMiddleware)
 
 	srv.Get("/auth-health-check", func(c *fiber.Ctx) error {
 		return c.
