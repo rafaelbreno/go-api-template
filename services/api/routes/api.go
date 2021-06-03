@@ -23,6 +23,8 @@ func Listen() {
 	taskRoutes()
 	listRoutes()
 
+	r.GET("/ping", pingHandler)
+
 	r.NoRoute(noRouteHandler)
 	r.NoMethod(methodNotAllowedHandler)
 
