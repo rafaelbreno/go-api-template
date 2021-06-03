@@ -9,9 +9,9 @@ RUN apk update \
 RUN addgroup -S golang \
   && adduser -S -G golang golang
 
-COPY . .
+COPY services/auth .
 
-RUN go build main.go && ./main
-
+RUN go build main.go
 EXPOSE 8080
-CMD ["mailroom"]
+
+CMD ["./main"]
