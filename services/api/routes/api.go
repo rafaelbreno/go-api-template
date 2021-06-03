@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rafaelbreno/go-api-template/api/cmd/server"
 	"github.com/rafaelbreno/go-api-template/api/internal/handler"
@@ -57,14 +59,20 @@ func listRoutes() {
 	group.DELETE("/:id", h.Delete)
 }
 
+func pingHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Pong API",
+	})
+}
+
 func noRouteHandler(c *gin.Context) {
-	c.JSON(404, gin.H{
+	c.JSON(http.StatusNotFound, gin.H{
 		"message": "Endpoint not found",
 	})
 }
 
 func methodNotAllowedHandler(c *gin.Context) {
-	c.JSON(405, gin.H{
+	c.JSON(http.StatusMethodNotAllowed, gin.H{
 		"message": "Method not allowed",
 	})
 }
