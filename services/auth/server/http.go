@@ -32,7 +32,7 @@ func Listen() {
 
 	routes()
 
-	log.Fatal(srv.Listen(":3000"))
+	log.Fatal(srv.Listen(":8080"))
 }
 
 func routes() {
