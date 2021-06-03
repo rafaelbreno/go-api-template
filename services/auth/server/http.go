@@ -33,7 +33,7 @@ func Listen() {
 }
 
 func routes() {
-	srv.Get("/health-check", func(c *fiber.Ctx) error {
+	srv.Get("/auth/health-check", func(c *fiber.Ctx) error {
 		return c.
 			Status(http.StatusOK).
 			JSON(map[string]string{

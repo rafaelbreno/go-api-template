@@ -1,7 +1,11 @@
 package routes
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rafaelbreno/go-api-template/api/cmd/server"
@@ -12,7 +16,7 @@ var r *gin.Engine
 var sv server.Server
 
 func Listen() {
-	sv, err := server.NewServer(8070, server.TestMode)
+	sv, err := server.NewServer(8070, server.DebugMode)
 
 	if err != nil {
 		panic(err)
@@ -23,7 +27,7 @@ func Listen() {
 	taskRoutes()
 	listRoutes()
 
-	r.GET("/ping", pingHandler)
+	r.GET("/api/ping", pingHandler)
 
 	r.NoRoute(noRouteHandler)
 	r.NoMethod(methodNotAllowedHandler)
@@ -62,8 +66,41 @@ func listRoutes() {
 }
 
 func pingHandler(c *gin.Context) {
+	response, err := http.Get(fmt.Sprintf("%s/ping", os.Getenv("API_HOST")))
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Pong API",
+			"error":   "Unable to reach Auth service",
+		})
+		return
+	}
+
+	responseAuth, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Pong API",
+			"error":   "Unable to read Auth's service response",
+		})
+		return
+	}
+
+	var responseData struct {
+		Message string `json:"message"`
+	}
+
+	err = json.Unmarshal(responseAuth, &responseData)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Pong API",
+			"error":   err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Pong API",
+		"message":      "Pong API",
+		"auth_message": responseData.Message,
 	})
 }
 
