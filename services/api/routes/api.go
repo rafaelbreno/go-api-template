@@ -66,12 +66,19 @@ func listRoutes() {
 }
 
 func pingHandler(c *gin.Context) {
-	response, err := http.Get(fmt.Sprintf("%s/ping", os.Getenv("API_HOST")))
+	authURL := fmt.Sprintf("http://%s:%s/%s/ping",
+		os.Getenv("AUTH_HOST"),
+		os.Getenv("AUTH_PORT"),
+		os.Getenv("AUTH_PREFIX"))
+
+	response, err := http.Get(authURL)
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": "Pong API",
-			"error":   "Unable to reach Auth service",
+			"message":       "Pong API",
+			"auth_url":      authURL,
+			"error":         "Unable to reach Auth service",
+			"error_message": err.Error(),
 		})
 		return
 	}
@@ -79,8 +86,9 @@ func pingHandler(c *gin.Context) {
 	responseAuth, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Pong API",
-			"error":   "Unable to read Auth's service response",
+			"message":  "Pong API",
+			"auth_url": authURL,
+			"error":    "Unable to read Auth's service response",
 		})
 		return
 	}
@@ -92,14 +100,16 @@ func pingHandler(c *gin.Context) {
 	err = json.Unmarshal(responseAuth, &responseData)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Pong API",
-			"error":   err.Error(),
+			"message":  "Pong API",
+			"error":    err.Error(),
+			"auth_url": authURL,
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":      "Pong API",
+		"auth_url":     authURL,
 		"auth_message": responseData.Message,
 	})
 }
