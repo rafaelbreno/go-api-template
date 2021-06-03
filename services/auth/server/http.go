@@ -28,7 +28,7 @@ var r fiber.Router
 func Listen() {
 	srv = fiber.New(getConfig())
 
-	r = srv.Group("/auth")
+	r = srv.Group("")
 
 	routes()
 
