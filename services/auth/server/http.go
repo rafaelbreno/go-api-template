@@ -40,7 +40,7 @@ func routes() {
 				"message": "Everything working fine",
 			})
 	})
-	srv.Get("/ping", func(c *fiber.Ctx) error {
+	srv.Get("/auth/ping", func(c *fiber.Ctx) error {
 		return c.
 			Status(http.StatusOK).
 			JSON(map[string]string{
