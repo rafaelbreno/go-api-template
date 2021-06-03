@@ -1,32 +1,48 @@
-version: "3"
+version: "3.9"
 
 services:
-    postgres-auth:
-        build:
-            context: .
-            dockerfile: .docker/postgresql/Dockerfile
-        ports: 
-            - "${POSTGRES_AUTH_PORT}:5432"
-        image: ${POSTGRES_AUTH_NAME}
-        container_name: ${POSTGRES_AUTH_NAME}
-        environment:
-            - PGDATA=${POSTGRES_AUTH_DATA}
-            - POSTGRES_DB=${POSTGRES_AUTH_DB}
-            - POSTGRES_USER=${POSTGRES_AUTH_USER}
-            - POSTGRES_PASSWORD=${POSTGRES_AUTH_PASSWORD}
+    nginx:
+      build:
+        context: .
+        dockerfile: .docker/local/nginx/Dockerfile
+      depends_on:
+        - api
+        - auth
+    api:
+      build:
+          context: .
+          dockerfile: ./.docker/api/Dockerfile
+      ports:
+        - "8070:8070"
+      image: "api"
+      container_name: "api"
+      depends_on:
+        - redis
+        - postgres
+    auth:
+      build:
+          context: .
+          dockerfile: ./.docker/auth/Dockerfile
+      image: "auth"
+      container_name: "auth"
+      ports:
+        - "8080:8080"
+      depends_on:
+        - redis
+        - postgres
     postgres:
-        build:
-            context: .
-            dockerfile: .docker/postgresql/Dockerfile
-        ports: 
-            - "${POSTGRES_PORT}:5432"
-        image: ${POSTGRES_NAME}
-        container_name: ${POSTGRES_NAME}
-        environment:
-            - PGDATA=${POSTGRES_DATA}
-            - POSTGRES_DB=${POSTGRES_DB}
-            - POSTGRES_USER=${POSTGRES_USER}
-            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      build:
+          context: .
+          dockerfile: .docker/postgresql/Dockerfile
+      ports: 
+          - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+      image: ${POSTGRES_NAME}
+      container_name: ${POSTGRES_NAME}
+      environment:
+          - PGDATA=${POSTGRES_DATA}
+          - POSTGRES_DB=${POSTGRES_DB}
+          - POSTGRES_USER=${POSTGRES_USER}
+          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     redis:
       build:
           context: .
@@ -35,17 +51,3 @@ services:
           - "${REDIS_PORT}:6379"
       image: ${REDIS_NAME}
       container_name: ${REDIS_NAME}
-    api:
-      build:
-          context: ./services/api
-          dockerfile: .
-      depends_on:
-        - redis
-        - postgres
-        - postgres-auth
-    auth:
-      build:
-          context: ./services/api
-          dockerfile: .
-      depends_on:
-        - api
