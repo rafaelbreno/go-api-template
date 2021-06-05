@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rafaelbreno/go-api-template/api/auth"
 	"github.com/rafaelbreno/go-api-template/api/cmd/server"
 	"github.com/rafaelbreno/go-api-template/api/internal/handler"
 )
@@ -23,6 +24,8 @@ func Listen() {
 	}
 
 	r = sv.Router
+
+	r.Use(AuthMiddleware())
 
 	taskRoutes()
 	listRoutes()
@@ -124,4 +127,18 @@ func methodNotAllowedHandler(c *gin.Context) {
 	c.JSON(http.StatusMethodNotAllowed, gin.H{
 		"message": "Method not allowed",
 	})
+}
+
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := c.GetString("token")
+
+		if status, err := auth.CheckAuth(token); err != nil {
+			c.JSON(status, gin.H{
+				"error": err.Error(),
+			})
+		} else {
+			c.Next()
+		}
+	}
 }
