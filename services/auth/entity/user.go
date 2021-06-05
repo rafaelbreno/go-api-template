@@ -11,6 +11,11 @@ type User struct {
 	Password string `db:"password" json:"password" gorm:"varchar(128);not null"`
 }
 
+type UserDTO struct {
+	ID       uint   `json:"id"`
+	Username string `json:"username"`
+}
+
 func (u *User) EncryptPassword() error {
 	var byteEncPwd []byte
 	var err error
@@ -25,4 +30,12 @@ func (u *User) EncryptPassword() error {
 
 func (u *User) CheckPassword(hashedPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(u.Password))
+}
+
+// Data transfer object
+func (u *User) ToDTO() UserDTO {
+	return UserDTO{
+		ID:       u.ID,
+		Username: u.Username,
+	}
 }
