@@ -8,6 +8,8 @@ import (
 type List struct {
 	gorm.Model
 
+	UserID uint `db:"user_id" json:"user_id"` // User foreign key
+
 	Title       string `db:"title" json:"title"`             // Title, required
 	Description string `db:"description" json:"description"` // Description, not required
 
