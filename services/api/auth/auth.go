@@ -15,17 +15,17 @@ func init() {
 		os.Getenv("AUTH_PREFIX"))
 }
 
-func CheckAuth(token string) error {
+func CheckAuth(token string) (int, error) {
 
 	response, err := http.Get(authCheck)
 
 	if err != nil {
-		return err
+		return response.StatusCode, err
 	}
 
 	if response.Status == fmt.Sprint(http.StatusForbidden) {
-		return fmt.Errorf("Invalid token")
+		return response.StatusCode, fmt.Errorf("Invalid token")
 	}
 
-	return nil
+	return response.StatusCode, nil
 }
