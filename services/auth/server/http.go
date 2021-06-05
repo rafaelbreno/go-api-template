@@ -33,14 +33,17 @@ func Listen() {
 }
 
 func routes() {
-	srv.Get("/auth/health-check", func(c *fiber.Ctx) error {
+
+	apiGroup := srv.Group("/auth")
+
+	apiGroup.Get("/health-check", func(c *fiber.Ctx) error {
 		return c.
 			Status(http.StatusOK).
 			JSON(map[string]string{
 				"message": "Everything working fine",
 			})
 	})
-	srv.Get("/auth/ping", func(c *fiber.Ctx) error {
+	apiGroup.Get("/ping", func(c *fiber.Ctx) error {
 		return c.
 			Status(http.StatusOK).
 			JSON(map[string]string{
@@ -49,13 +52,20 @@ func routes() {
 	})
 
 	uh := handlers.NewUserHandler()
+	apiGroup.Post("/signup", uh.Create)
+	apiGroup.Post("/signin", uh.SignIn)
 
-	srv.Post("/signup", uh.Create)
-	srv.Post("/signin", uh.SignIn)
+	authGroup := srv.Group("", authMiddleware)
 
-	srv.Use(authMiddleware)
+	authGroup.Get("/check", func(c *fiber.Ctx) error {
+		return c.
+			Status(http.StatusOK).
+			JSON(map[string]string{
+				"token": c.Get("Authorization"),
+			})
+	})
 
-	srv.Get("/auth-health-check", func(c *fiber.Ctx) error {
+	authGroup.Get("/auth-health-check", func(c *fiber.Ctx) error {
 		return c.
 			Status(http.StatusOK).
 			JSON(map[string]string{
