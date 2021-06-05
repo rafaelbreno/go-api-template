@@ -9,7 +9,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/rafaelbreno/go-api-template/services/auth/auth"
+	"github.com/rafaelbreno/go-api-template/services/auth/entity"
 	"github.com/rafaelbreno/go-api-template/services/auth/handlers"
+	"github.com/rafaelbreno/go-api-template/services/auth/repository"
 )
 
 // More https://docs.gofiber.io/api/fiber#config
@@ -58,10 +60,29 @@ func routes() {
 	authGroup := srv.Group("", authMiddleware)
 
 	authGroup.Get("/check", func(c *fiber.Ctx) error {
+		userID := c.Get("user_id")
+
+		var user entity.User
+
+		sql := repository.
+			NewUserRepositoryDB().
+			DB.
+			First(&user, userID)
+
+		err := sql.Error
+		if err != nil {
+			return c.
+				Status(http.StatusNotFound).
+				JSON(map[string]string{
+					"message": err.Error(),
+				})
+		}
+
 		return c.
 			Status(http.StatusOK).
-			JSON(map[string]string{
+			JSON(map[string]interface{}{
 				"token": c.Get("Authorization"),
+				"user":  user.ToDTO(),
 			})
 	})
 
@@ -105,7 +126,7 @@ func authMiddleware(c *fiber.Ctx) error {
 			})
 	}
 
-	c.Set("username", jwtClaim.Username)
+	c.Set("user_id", fmt.Sprint(jwtClaim.ID))
 
 	return c.Next()
 }
