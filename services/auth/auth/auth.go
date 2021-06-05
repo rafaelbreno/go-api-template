@@ -6,6 +6,7 @@ import (
 
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/rafaelbreno/go-api-template/services/auth/entity"
+	"github.com/rafaelbreno/go-api-template/services/auth/repository"
 )
 
 type Wrapper struct {
@@ -17,10 +18,12 @@ type Wrapper struct {
 type Claim struct {
 	Username string
 	jwt.StandardClaims
+	User entity.User
 }
 
 type UserAuth struct {
-	Token string `json:"token"`
+	Token string      `json:"token"`
+	User  entity.User `json:"user"`
 }
 
 func GetUserToken(u entity.User) (UserAuth, error) {
@@ -39,6 +42,7 @@ func GetUserToken(u entity.User) (UserAuth, error) {
 	}
 
 	userAuth.Token = signedToken
+	userAuth.User = u
 
 	return userAuth, nil
 }
@@ -72,6 +76,10 @@ func (aw *Wrapper) ValidateToken(signedToken string) (claim *Claim, err error) {
 	}
 
 	claim, ok := token.Claims.(*Claim)
+
+	userRepo := repository.NewUserRepositoryDB()
+
+	userRepo.DB.First(&claim.User, "username = ?", claim.Username)
 
 	if !ok {
 		err = errors.New("Couldn't parse claims")
