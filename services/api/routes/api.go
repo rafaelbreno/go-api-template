@@ -43,7 +43,7 @@ func tempHandler(c *gin.Context) {
 }
 
 func taskRoutes() {
-	h := handler.NewTaskHandler()
+	h := handler.NewTaskHandler(user.User)
 	group := r.Group("/api/task")
 
 	group.GET("", h.FindAll)
@@ -56,7 +56,7 @@ func taskRoutes() {
 
 func listRoutes() {
 	group := r.Group("/api/list")
-	h := handler.NewListHandler()
+	h := handler.NewListHandler(user.User)
 
 	group.GET("", h.FindAll)
 	group.GET("/:id", h.FindByID)
