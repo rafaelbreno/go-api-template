@@ -16,6 +16,8 @@ import (
 var r *gin.Engine
 var sv server.Server
 
+var user auth.AuthResponse
+
 func Listen() {
 	sv, err := server.NewServer(8070, server.DebugMode)
 
@@ -46,7 +48,7 @@ func tempHandler(c *gin.Context) {
 
 func taskRoutes() {
 	h := handler.NewTaskHandler()
-	group := r.Group("/task")
+	group := r.Group("/api/task")
 
 	group.GET("", h.FindAll)
 	group.GET("/:id", h.FindById)
@@ -57,7 +59,7 @@ func taskRoutes() {
 }
 
 func listRoutes() {
-	group := r.Group("/list")
+	group := r.Group("/api/list")
 	h := handler.NewListHandler()
 
 	group.GET("", h.FindAll)
@@ -89,9 +91,8 @@ func pingHandler(c *gin.Context) {
 	responseAuth, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message":  "Pong API",
-			"auth_url": authURL,
-			"error":    "Unable to read Auth's service response",
+			"message": "Pong API",
+			"error":   "Unable to read Auth's service response",
 		})
 		return
 	}
@@ -103,9 +104,8 @@ func pingHandler(c *gin.Context) {
 	err = json.Unmarshal(responseAuth, &responseData)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message":  "Pong API",
-			"error":    err.Error(),
-			"auth_url": authURL,
+			"message": "Pong API",
+			"error":   err.Error(),
 		})
 		return
 	}
@@ -115,30 +115,38 @@ func pingHandler(c *gin.Context) {
 		"auth_url":     authURL,
 		"auth_message": responseData.Message,
 	})
+
+	return
 }
 
 func noRouteHandler(c *gin.Context) {
 	c.JSON(http.StatusNotFound, gin.H{
 		"message": "Endpoint not found",
 	})
+	return
 }
 
 func methodNotAllowedHandler(c *gin.Context) {
 	c.JSON(http.StatusMethodNotAllowed, gin.H{
 		"message": "Method not allowed",
 	})
+	return
 }
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.GetString("token")
+		token := c.GetString("Authorization")
 
-		if status, err := auth.CheckAuth(token); err != nil {
-			c.JSON(status, gin.H{
+		userResponse, err := auth.CheckAuth(token)
+
+		user = userResponse
+
+		if err != nil {
+			c.JSON(userResponse.StatusCode, gin.H{
 				"error": err.Error(),
 			})
-		} else {
-			c.Next()
+			c.Abort()
 		}
+		c.Next()
 	}
 }
