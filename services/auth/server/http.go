@@ -34,6 +34,8 @@ func Listen() {
 	log.Fatal(srv.Listen(":8080"))
 }
 
+var user entity.User
+
 func routes() {
 
 	apiGroup := srv.Group("/auth")
@@ -60,24 +62,6 @@ func routes() {
 	authGroup := srv.Group("", authMiddleware)
 
 	authGroup.Get("/check", func(c *fiber.Ctx) error {
-		userID := c.Get("user_id")
-
-		var user entity.User
-
-		sql := repository.
-			NewUserRepositoryDB().
-			DB.
-			First(&user, userID)
-
-		err := sql.Error
-		if err != nil {
-			return c.
-				Status(http.StatusNotFound).
-				JSON(map[string]string{
-					"message": err.Error(),
-				})
-		}
-
 		return c.
 			Status(http.StatusOK).
 			JSON(map[string]interface{}{
@@ -126,7 +110,20 @@ func authMiddleware(c *fiber.Ctx) error {
 			})
 	}
 
-	c.Set("user_id", fmt.Sprint(jwtClaim.ID))
+	sql := repository.
+		NewUserRepositoryDB().
+		DB.
+		First(&user, jwtClaim.ID)
+
+	err = sql.Error
+
+	if err != nil {
+		return c.
+			Status(http.StatusNotFound).
+			JSON(map[string]string{
+				"message": err.Error(),
+			})
+	}
 
 	return c.Next()
 }
