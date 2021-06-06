@@ -12,8 +12,6 @@ import (
 var r *gin.Engine
 var sv server.Server
 
-var user auth.AuthResponse
-
 func Listen() {
 	sv, err := server.NewServer(8070, server.DebugMode)
 
@@ -43,7 +41,7 @@ func tempHandler(c *gin.Context) {
 }
 
 func taskRoutes() {
-	h := handler.NewTaskHandler(user.User)
+	h := handler.NewTaskHandler()
 	group := r.Group("/api/task")
 
 	group.GET("", h.FindAll)
@@ -56,7 +54,7 @@ func taskRoutes() {
 
 func listRoutes() {
 	group := r.Group("/api/list")
-	h := handler.NewListHandler(user.User)
+	h := handler.NewListHandler()
 
 	group.GET("", h.FindAll)
 	group.GET("/:id", h.FindByID)
@@ -69,7 +67,7 @@ func listRoutes() {
 func pingHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Pong API",
-		"user":    user,
+		"user":    c.MustGet("user"),
 	})
 	return
 }
@@ -101,7 +99,8 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 		}
 
-		user = userResponse
+		c.Set("user_id", userResponse.User.ID)
+		c.Set("user", userResponse.User)
 
 		c.Next()
 	}

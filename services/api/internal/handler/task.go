@@ -2,7 +2,6 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/rafaelbreno/go-api-template/api/auth"
 	"github.com/rafaelbreno/go-api-template/api/internal/entity"
 	"github.com/rafaelbreno/go-api-template/api/internal/repository"
 	"github.com/rafaelbreno/go-api-template/api/utils"
@@ -13,14 +12,14 @@ type taskHandler struct {
 	repo repository.TaskRepositoryDB
 }
 
-func NewTaskHandler(userDTO auth.UserDTO) taskHandler {
+func NewTaskHandler() taskHandler {
 	return taskHandler{
-		repo: repository.NewTaskRepositoryDB(userDTO),
+		repo: repository.NewTaskRepositoryDB(),
 	}
 }
 
 func (t taskHandler) FindAll(c *gin.Context) {
-	tasks, err := t.repo.FindAll()
+	tasks, err := t.repo.FindAll(c.GetString("list_id"))
 
 	if err != nil {
 		c.JSON(401, gin.H{

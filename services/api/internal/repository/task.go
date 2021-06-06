@@ -1,14 +1,13 @@
 package repository
 
 import (
-	"github.com/rafaelbreno/go-api-template/api/auth"
 	"github.com/rafaelbreno/go-api-template/api/cmd/storage"
 	"github.com/rafaelbreno/go-api-template/api/internal/entity"
 	"gorm.io/gorm"
 )
 
 type TaskRepository interface {
-	FindAll() ([]entity.Task, error)
+	FindAll(list_id string) ([]entity.Task, error)
 	FindByID(id string) (entity.Task, error)
 	Create(task entity.Task) (entity.Task, error)
 	Update(task entity.Task) (entity.Task, error)
@@ -17,13 +16,12 @@ type TaskRepository interface {
 
 type TaskRepositoryDB struct {
 	DBConn *gorm.DB
-	User   auth.UserDTO
 }
 
-func (tr TaskRepositoryDB) FindAll() ([]entity.Task, error) {
+func (tr TaskRepositoryDB) FindAll(list_id string) ([]entity.Task, error) {
 	var tasks []entity.Task
 
-	if err := tr.DBConn.Find(&tasks).Error; err != nil {
+	if err := tr.DBConn.Where("list_id = ?", list_id).Find(&tasks).Error; err != nil {
 		return tasks, err
 	}
 
@@ -90,9 +88,8 @@ func (tr TaskRepositoryDB) Delete(id string) (entity.Task, error) {
 	return task, nil
 }
 
-func NewTaskRepositoryDB(userDTO auth.UserDTO) TaskRepositoryDB {
+func NewTaskRepositoryDB() TaskRepositoryDB {
 	return TaskRepositoryDB{
 		DBConn: storage.DBConn,
-		User:   userDTO,
 	}
 }

@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"github.com/rafaelbreno/go-api-template/api/auth"
 	"github.com/rafaelbreno/go-api-template/api/cmd/storage"
 	"github.com/rafaelbreno/go-api-template/api/internal/entity"
 	"gorm.io/gorm"
@@ -9,31 +8,30 @@ import (
 
 type ListRepository interface {
 	FindAll() ([]entity.List, error)
-	FindByID(id string) (entity.List, error)
+	FindByID(id string, user_id string) (entity.List, error)
 	Create(list entity.List) (entity.List, error)
 	Update(list entity.List) (entity.List, error)
-	Delete(id string) (entity.List, error)
+	Delete(id string, user_id string) (entity.List, error)
 }
 
 type ListRepositoryDB struct {
 	DBConn *gorm.DB
-	User   auth.UserDTO
 }
 
-func (lr ListRepositoryDB) FindAll() ([]entity.List, error) {
+func (lr ListRepositoryDB) FindAll(user_id string) ([]entity.List, error) {
 	var lists []entity.List
 
-	if err := lr.DBConn.Find(&lists).Error; err != nil {
+	if err := lr.DBConn.Where("user_id = ?", user_id).Find(&lists).Error; err != nil {
 		return lists, err
 	}
 
 	return lists, nil
 }
 
-func (lr ListRepositoryDB) FindByID(id string) (entity.List, error) {
+func (lr ListRepositoryDB) FindByID(id string, user_id string) (entity.List, error) {
 	var list entity.List
 
-	if err := lr.DBConn.First(&list, id).Error; err != nil {
+	if err := lr.DBConn.First(&list, "user_id = ? AND id = ?", user_id, id).Error; err != nil {
 		return list, err
 	}
 
@@ -54,7 +52,7 @@ func (lr ListRepositoryDB) Create(l entity.List) (entity.List, error) {
 func (lr ListRepositoryDB) Update(l entity.List) (entity.List, error) {
 	var list entity.List
 
-	if err := lr.DBConn.First(&list, l.ID).Error; err != nil {
+	if err := lr.DBConn.First(&list, "user_id = ? AND id = ?", l.UserID, l.ID).Error; err != nil {
 		return list, err
 	}
 
@@ -77,10 +75,10 @@ func (lr ListRepositoryDB) Update(l entity.List) (entity.List, error) {
 	return list, nil
 }
 
-func (lr ListRepositoryDB) Delete(id string) (entity.List, error) {
+func (lr ListRepositoryDB) Delete(id string, user_id string) (entity.List, error) {
 	var list entity.List
 
-	if err := lr.DBConn.First(&list, id).Error; err != nil {
+	if err := lr.DBConn.First(&list, "user_id = ? AND id = ?", user_id, id).Error; err != nil {
 		return list, err
 	}
 
@@ -90,9 +88,8 @@ func (lr ListRepositoryDB) Delete(id string) (entity.List, error) {
 
 	return list, nil
 }
-func NewListRepositoryDB(userDTO auth.UserDTO) ListRepositoryDB {
+func NewListRepositoryDB() ListRepositoryDB {
 	return ListRepositoryDB{
 		DBConn: storage.DBConn,
-		User:   userDTO,
 	}
 }
