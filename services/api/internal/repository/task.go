@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/rafaelbreno/go-api-template/api/auth"
 	"github.com/rafaelbreno/go-api-template/api/cmd/storage"
 	"github.com/rafaelbreno/go-api-template/api/internal/entity"
 	"gorm.io/gorm"
@@ -16,6 +17,7 @@ type TaskRepository interface {
 
 type TaskRepositoryDB struct {
 	DBConn *gorm.DB
+	User   auth.UserDTO
 }
 
 func (tr TaskRepositoryDB) FindAll() ([]entity.Task, error) {
@@ -88,6 +90,9 @@ func (tr TaskRepositoryDB) Delete(id string) (entity.Task, error) {
 	return task, nil
 }
 
-func NewTaskRepositoryDB() TaskRepositoryDB {
-	return TaskRepositoryDB{storage.DBConn}
+func NewTaskRepositoryDB(userDTO auth.UserDTO) TaskRepositoryDB {
+	return TaskRepositoryDB{
+		DBConn: storage.DBConn,
+		User:   userDTO,
+	}
 }

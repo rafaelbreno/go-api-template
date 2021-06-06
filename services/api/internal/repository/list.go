@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/rafaelbreno/go-api-template/api/auth"
 	"github.com/rafaelbreno/go-api-template/api/cmd/storage"
 	"github.com/rafaelbreno/go-api-template/api/internal/entity"
 	"gorm.io/gorm"
@@ -16,6 +17,7 @@ type ListRepository interface {
 
 type ListRepositoryDB struct {
 	DBConn *gorm.DB
+	User   auth.UserDTO
 }
 
 func (lr ListRepositoryDB) FindAll() ([]entity.List, error) {
@@ -88,6 +90,9 @@ func (lr ListRepositoryDB) Delete(id string) (entity.List, error) {
 
 	return list, nil
 }
-func NewListRepositoryDB() ListRepositoryDB {
-	return ListRepositoryDB{storage.DBConn}
+func NewListRepositoryDB(userDTO auth.UserDTO) ListRepositoryDB {
+	return ListRepositoryDB{
+		DBConn: storage.DBConn,
+		User:   userDTO,
+	}
 }

@@ -11,13 +11,11 @@ import (
 
 type taskHandler struct {
 	repo repository.TaskRepositoryDB
-	user auth.UserDTO
 }
 
 func NewTaskHandler(userDTO auth.UserDTO) taskHandler {
 	return taskHandler{
-		repo: repository.NewTaskRepositoryDB(),
-		user: userDTO,
+		repo: repository.NewTaskRepositoryDB(userDTO),
 	}
 }
 

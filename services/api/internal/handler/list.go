@@ -16,8 +16,7 @@ type listHandler struct {
 
 func NewListHandler(userDTO auth.UserDTO) listHandler {
 	return listHandler{
-		repo: repository.NewListRepositoryDB(),
-		user: userDTO,
+		repo: repository.NewListRepositoryDB(userDTO),
 	}
 }
 
