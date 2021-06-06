@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -20,10 +21,9 @@ type UserDTO struct {
 }
 
 func init() {
-	authCheck = fmt.Sprintf("http://%s:%s/%s/check",
+	authCheck = fmt.Sprintf("http://%s:%s/check",
 		os.Getenv("AUTH_HOST"),
-		os.Getenv("AUTH_PORT"),
-		os.Getenv("AUTH_PREFIX"))
+		os.Getenv("AUTH_PORT"))
 }
 
 func CheckAuth(token string) (AuthResponse, error) {
@@ -42,13 +42,20 @@ func CheckAuth(token string) (AuthResponse, error) {
 
 	response, err := client.Do(req)
 
-	authResp.StatusCode = response.StatusCode
-
 	if err != nil {
 		return authResp, err
 	}
 
-	if response.Status == fmt.Sprint(http.StatusForbidden) {
+	defer response.Body.Close()
+
+	err = json.NewDecoder(response.Body).Decode(&authResp)
+	if err != nil {
+		return authResp, err
+	}
+
+	authResp.StatusCode = response.StatusCode
+
+	if response.StatusCode == http.StatusForbidden {
 		return authResp, fmt.Errorf("Invalid token")
 	}
 
