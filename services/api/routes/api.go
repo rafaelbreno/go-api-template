@@ -1,11 +1,7 @@
 package routes
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rafaelbreno/go-api-template/api/auth"
@@ -71,51 +67,10 @@ func listRoutes() {
 }
 
 func pingHandler(c *gin.Context) {
-	authURL := fmt.Sprintf("http://%s:%s/%s/ping",
-		os.Getenv("AUTH_HOST"),
-		os.Getenv("AUTH_PORT"),
-		os.Getenv("AUTH_PREFIX"))
-
-	response, err := http.Get(authURL)
-
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message":       "Pong API",
-			"auth_url":      authURL,
-			"error":         "Unable to reach Auth service",
-			"error_message": err.Error(),
-		})
-		return
-	}
-
-	responseAuth, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Pong API",
-			"error":   "Unable to read Auth's service response",
-		})
-		return
-	}
-
-	var responseData struct {
-		Message string `json:"message"`
-	}
-
-	err = json.Unmarshal(responseAuth, &responseData)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Pong API",
-			"error":   err.Error(),
-		})
-		return
-	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"message":      "Pong API",
-		"auth_url":     authURL,
-		"auth_message": responseData.Message,
+		"message": "Pong API",
+		"user":    user,
 	})
-
 	return
 }
 
@@ -139,14 +94,15 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		userResponse, err := auth.CheckAuth(token)
 
-		user = userResponse
-
 		if err != nil {
 			c.JSON(userResponse.StatusCode, gin.H{
 				"error": err.Error(),
 			})
 			c.Abort()
 		}
+
+		user = userResponse
+
 		c.Next()
 	}
 }
