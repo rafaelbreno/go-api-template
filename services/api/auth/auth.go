@@ -8,6 +8,17 @@ import (
 
 var authCheck string
 
+type AuthResponse struct {
+	Token      string  `json:"token"`
+	User       UserDTO `json:"user"`
+	StatusCode int
+}
+
+type UserDTO struct {
+	ID       uint   `json:"user_id"`
+	Username string `json:"username"`
+}
+
 func init() {
 	authCheck = fmt.Sprintf("http://%s:%s/%s/check",
 		os.Getenv("AUTH_HOST"),
@@ -15,17 +26,33 @@ func init() {
 		os.Getenv("AUTH_PREFIX"))
 }
 
-func CheckAuth(token string) (int, error) {
+func CheckAuth(token string) (AuthResponse, error) {
+	authResp := AuthResponse{}
 
-	response, err := http.Get(authCheck)
+	req, err := http.NewRequest("GET", authCheck, nil)
 
 	if err != nil {
-		return response.StatusCode, err
+		authResp.StatusCode = req.Response.StatusCode
+		return authResp, err
+	}
+
+	req.Header.Add("Authorization", token)
+
+	client := http.DefaultClient
+
+	response, err := client.Do(req)
+
+	authResp.StatusCode = response.StatusCode
+
+	if err != nil {
+		return authResp, err
 	}
 
 	if response.Status == fmt.Sprint(http.StatusForbidden) {
-		return response.StatusCode, fmt.Errorf("Invalid token")
+		return authResp, fmt.Errorf("Invalid token")
 	}
 
-	return response.StatusCode, nil
+	authResp.StatusCode = response.StatusCode
+
+	return authResp, nil
 }
