@@ -11,12 +11,13 @@ var authCheck string
 
 type AuthResponse struct {
 	Token      string  `json:"token"`
+	Message    string  `json:"message"`
 	User       UserDTO `json:"user"`
-	StatusCode int
+	StatusCode int     `json:"status_code"`
 }
 
 type UserDTO struct {
-	ID       uint   `json:"user_id"`
+	ID       uint   `json:"id"`
 	Username string `json:"username"`
 }
 
@@ -56,7 +57,7 @@ func CheckAuth(token string) (AuthResponse, error) {
 	authResp.StatusCode = response.StatusCode
 
 	if response.StatusCode == http.StatusForbidden {
-		return authResp, fmt.Errorf("Invalid token")
+		return authResp, fmt.Errorf("%s", authResp.Message)
 	}
 
 	authResp.StatusCode = response.StatusCode
