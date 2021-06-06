@@ -90,7 +90,7 @@ func methodNotAllowedHandler(c *gin.Context) {
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.GetString("Authorization")
+		token := c.GetHeader("Authorization")
 
 		userResponse, err := auth.CheckAuth(token)
 
